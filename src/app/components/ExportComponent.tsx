@@ -20,6 +20,7 @@ export const ExportComponent = (props: Props) => {
 
   let list = (
     <ul>
+      <li>{frame}</li>
       {props.pict.getOperations().map(op => (
         <li>{op.toString()}</li>
       ))}
@@ -29,8 +30,7 @@ export const ExportComponent = (props: Props) => {
   return (
     <React.Fragment>
       <h1>{'Exported PICT Hex'}</h1>
-      {exporter.export(props.pict)}
-      {frame}
+      {exporter.export(props.pict)}      
       {list}
     </React.Fragment>
   );

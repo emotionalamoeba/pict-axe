@@ -88,7 +88,7 @@ export class FrameRoundedRectangleOperation extends AOperation {
       rect.getBottom() - ovalSize.getY(),
     );
 
-    this.drawArc(
+   /* this.drawArc(
       ctx,
       imageData,
       0,
@@ -96,12 +96,40 @@ export class FrameRoundedRectangleOperation extends AOperation {
       rect.getTop() + ovalSize.getY(),
       ovalSize.getX(),
       ovalSize.getY(),
-    );
+    );*/
+
+    let quadrant = 0;
+    this.ellipseMidPoint(ctx, imageData, rect.getLeft() + ovalSize.getX(),
+    rect.getTop() + ovalSize.getY(),
+    ovalSize.getX(),
+    ovalSize.getY(), quadrant);
+
+    quadrant = 1;
+    this.ellipseMidPoint(ctx, imageData, rect.getRight() - ovalSize.getX(),
+    rect.getTop() + ovalSize.getY(),
+    ovalSize.getX(),
+    ovalSize.getY(), quadrant);
+
+    quadrant = 2;
+    this.ellipseMidPoint(ctx, imageData, rect.getLeft() + ovalSize.getX(),
+    rect.getBottom() - ovalSize.getY(),
+    ovalSize.getX(),
+    ovalSize.getY(), quadrant);
+
+    quadrant = 3;
+    this.ellipseMidPoint(ctx, imageData, rect.getRight() - ovalSize.getX(),
+    rect.getBottom() - ovalSize.getY(),
+    ovalSize.getX(),
+    ovalSize.getY(), quadrant);
 
     ctx.putImageData(imageData, 0, 0);
 
     return qdState;
   };
+
+  corner() {
+    
+  }
 
   toString(): string {
     return `Rounded Rectangle: ${this.operands[0].toString()}`;

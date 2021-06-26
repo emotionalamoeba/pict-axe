@@ -134,12 +134,93 @@ export abstract class AOperation {
     x: number,
     y: number,
   ) {
-    let index = (x + y * imageData.width) * this.COMPONENT_COUNT;
-    imageData.data[index++] = 0;
-    imageData.data[index++] = 0;
-    imageData.data[index++] = 0;
-    imageData.data[index++] = 255;
+    if (x >= 0 && x < imageData.width && y >=0 && y < imageData.height) {
+      let index = (x + y * imageData.width) * this.COMPONENT_COUNT;
+      imageData.data[index++] = 0;
+      imageData.data[index++] = 0;
+      imageData.data[index++] = 0;
+      imageData.data[index++] = 255;
+    }
   }
+
+
+  ellipseMidPoint(ctx: CanvasRenderingContext2D,
+    imageData: ImageData, xc: number, yc: number, a: number, b:number, quadrant:number)
+  {
+      let x = 0;
+      let y = b;
+      let p = Math.round(b*b-a*a*b+0.25*a*a);
+      let px = 0;
+      let py = a*a*y;
+
+      if (quadrant === 0) {
+        //this.setPixel(ctx, imageData, x+xc, -y+yc);
+      }
+      else {
+    //    this.setPixel(ctx, imageData, x+xc, y+yc);
+      }
+      
+      while (px < py)
+      {
+          if (p>0)
+          {
+              p += (2*b*b*x - 2*a*a*y + 3*b*b + 2*a*a);
+              y--;
+          }
+          else
+          {
+              p += (2*b*b*x + 3*b*b);
+          }
+   
+          x++;
+   
+          px = b*b*x;
+          py = a*a*y;
+   
+          if (quadrant === 0) {
+            this.setPixel(ctx, imageData, -x+xc, -y+yc);
+          }
+          else if (quadrant === 3) {
+            this.setPixel(ctx, imageData, x+xc, y+yc);
+          }
+          else if (quadrant === 1) {
+            this.setPixel(ctx, imageData, x+xc, -y+yc);                     
+          }
+          else {
+            this.setPixel(ctx, imageData, -x+xc, y+yc);
+          }
+      }
+   
+      p = Math.round(b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1)-a*a*b*b);
+      while (y>0)
+      {
+          if(p<0)
+          {
+              p += (b*b*(2*x+2)-a*a*(2*y-3));
+              x++;
+          }
+          else
+          {
+              p += (3*a*a-2*a*a*y);
+          }
+   
+          y--;
+   
+          if (quadrant === 0) {
+            this.setPixel(ctx, imageData, -x+xc, -y+yc);
+          }
+          else if (quadrant === 1) {
+            this.setPixel(ctx, imageData, x+xc, -y+yc);            
+          }
+          else if (quadrant === 3) {
+            this.setPixel(ctx, imageData, x+xc, y+yc);
+          }
+          else {
+            this.setPixel(ctx, imageData, -x+xc, y+yc);
+          }                                        
+      }
+  }
+  
 
   drawArc(
     ctx: CanvasRenderingContext2D,
@@ -151,8 +232,7 @@ export abstract class AOperation {
     ry: number,
   ): void {
     let x = rx,
-      y = 0;
-    let data = imageData.data;
+      y = 0;    
     this.setPixel(ctx, imageData, x + xc, y + yc);
 
     // When radius is zero only a single
@@ -204,128 +284,7 @@ export abstract class AOperation {
 
     ctx.putImageData(imageData, 0, 0);
   }
-
-  drawCircle(
-    ctx: CanvasRenderingContext2D,
-    imageData: ImageData,
-    xc: number,
-    yc: number,
-    r: number,
-  ): void {
-    let x = r,
-      y = 0;
-    let data = imageData.data;
-    let index = (x + xc + (y + yc) * imageData.width) * this.COMPONENT_COUNT;
-    data[index++] = 0;
-    data[index++] = 0;
-    data[index++] = 0;
-    data[index++] = 255;
-
-    // When radius is zero only a single
-    // point will be printed
-    if (r > 0) {
-      let index = (x + xc + (-y + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      index = (x + xc + (y + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      index = (y + xc + (x + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      index = (-y + xc + (x + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-    }
-
-    // Initialising the value of P
-    let P = 1 - r;
-    while (x > y) {
-      y++;
-
-      // Mid-point is inside or on the perimeter
-      if (P <= 0) P = P + 2 * y + 1;
-      // Mid-point is outside the perimeter
-      else {
-        x--;
-        P = P + 2 * y - 2 * x + 1;
-      }
-
-      // All the perimeter points have already
-      // been printed
-      if (x < y) break;
-
-      // Printing the generated point and its
-      // reflection in the other octants after
-      // translation
-      index = (x + xc + (y + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      index = (-x + xc + (y + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      index = (x + xc + (-y + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      index = (-x + xc + (-y + yc) * imageData.width) * this.COMPONENT_COUNT;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 0;
-      data[index++] = 255;
-
-      // If the generated point is on the
-      // line x = y then the perimeter points
-      // have already been printed
-      if (x != y) {
-        index = (y + xc + (x + yc) * imageData.width) * this.COMPONENT_COUNT;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 255;
-
-        index = (-y + xc + (x + yc) * imageData.width) * this.COMPONENT_COUNT;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 255;
-
-        index = (y + xc + (-x + yc) * imageData.width) * this.COMPONENT_COUNT;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 255;
-
-        index = (-y + xc + (-x + yc) * imageData.width) * this.COMPONENT_COUNT;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 0;
-        data[index++] = 255;
-      }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-  }
-
+ 
   abstract toString(): string;
 
   abstract render(

@@ -52,6 +52,7 @@ export class PICT {
     pict.addOperation(
       new FrameRoundedRectangleOperation(
         new Rect(0x000a, 0x0014, 0x00af, 0x0078),
+        //new Rect(0x000a, 0x0014, 0x002f, 0x006f),
       ),
     );
     return pict;
