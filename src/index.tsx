@@ -9,24 +9,20 @@ import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 // Use consistent styling
 import 'sanitize.css/sanitize.css';
 
 import { App } from 'app';
 
-import { HelmetProvider } from 'react-helmet-async';
+const rootElement = document.getElementById('root') as HTMLElement;
+const root = createRoot(rootElement);
 
-const MOUNT_NODE = document.getElementById('root') as HTMLElement;
-
-ReactDOM.render(    
+root.render(    
   <React.Fragment>
-      <HelmetProvider>
         <React.StrictMode>
           <App />
         </React.StrictMode>
-      </HelmetProvider>
-    </React.Fragment>,
-  MOUNT_NODE,
+    </React.Fragment>
 );
